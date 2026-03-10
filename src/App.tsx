@@ -1,11 +1,29 @@
+// src/App.tsx
+import { BrowserRouter } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { FinanceProvider } from './contexts/FinanceContext';
+import { AppRoutes } from './routes';
+import './index.css';
 
-
-export function App() {
+function App() {
   return (
-    <div className="App">
-      <h1 className="text-3xl font-bold underline">
-        meu controle financeiro 
-      </h1>
-    </div>
-  )
+    <BrowserRouter>
+      <FinanceProvider> {/* ← Envolvemos tudo com o provider */}
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#1F2937',
+              color: '#fff',
+              border: '1px solid #374151'
+            },
+          }}
+        />
+        <AppRoutes />
+      </FinanceProvider>
+    </BrowserRouter>
+  );
 }
+
+export default App;
