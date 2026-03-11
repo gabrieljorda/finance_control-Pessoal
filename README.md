@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+💰 Personal Finance Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Uma aplicação web desenvolvida com React + TypeScript para auxiliar no controle financeiro pessoal, permitindo registrar, visualizar e analisar despesas e receitas de forma simples e visual.
 
-Currently, two official plugins are available:
+O projeto utiliza gráficos e indicadores visuais para facilitar o entendimento da situação financeira, ajudando na tomada de decisões sobre gastos e planejamento financeiro.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🚀 Tecnologias Utilizadas
 
-## React Compiler
+Este projeto foi desenvolvido utilizando as seguintes tecnologias:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+React – Biblioteca para construção da interface
 
-## Expanding the ESLint configuration
+TypeScript – Tipagem estática para maior segurança no código
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+TailwindCSS – Estilização rápida e responsiva
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Lucide React – Biblioteca de ícones modernos
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Zod – Validação de dados e schemas
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Recharts / Chart Library – Visualização de dados em gráficos (caso esteja usando alguma específica, pode ajustar)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+📊 Funcionalidades
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+📥 Registro de receitas e despesas
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+📊 Visualização gráfica das movimentações financeiras
+
+📅 Organização de dados por período
+
+✔️ Validação de formulários utilizando Zod
+
+🎨 Interface moderna e responsiva com Tailwind
+
+📈 Painel com indicadores financeiros
+
+🖥️ Interface
+
+A aplicação apresenta um dashboard financeiro onde é possível visualizar:
+
+Total de receitas
+
+Total de despesas
+
+Saldo atual
+
+Gráficos comparativos
+
+Histórico de movimentações
