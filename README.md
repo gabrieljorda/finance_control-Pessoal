@@ -48,4 +48,6 @@ Gráficos comparativos
 
 Histórico de movimentações
 
-#Projeto em desenvolvimento e com intuito de aprender a construção web
+📄 Licença
+
+Este projeto foi desenvolvido para estudo e uso pessoal.
