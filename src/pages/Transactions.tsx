@@ -15,7 +15,6 @@ export const Transactions = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate(); // ← CRIAR A FUNÇÃO navigate
 
-  // Abrir modal automaticamente se tiver ?new=true na URL
   useEffect(() => {
     if (searchParams.get('new') === 'true') {
       setIsModalOpen(true);
@@ -37,7 +36,6 @@ export const Transactions = () => {
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Header */}
       <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -46,7 +44,6 @@ export const Transactions = () => {
             </h1>
             
             <div className="flex items-center space-x-4">
-              {/* BOTÃO: Voltar ao Dashboard - AGORA FUNCIONA! */}
               <button
                 onClick={() => navigate('/dashboard')} // ← AGORA navigate existe
                 className="flex items-center space-x-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
@@ -54,7 +51,6 @@ export const Transactions = () => {
                 <span>Dashboard</span>
               </button>
 
-              {/* BOTÃO: Nova Transação */}
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
@@ -67,9 +63,7 @@ export const Transactions = () => {
         </div>
       </header>
 
-      {/* Conteúdo principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filtros */}
         <TransactionFilters
           filters={filters}
           onFilterChange={updateFilter}

@@ -1,4 +1,5 @@
-// src/types/finances.ts - VERSÃO CORRETA COM TODOS OS EXPORTS
+// src/types/finances.ts
+// ======================
 
 export type TransactionType = 'income' | 'expense';
 
@@ -13,7 +14,7 @@ export interface Transaction {
   notes?: string;
 }
 
-export interface Category {  // ← AGORA TEM EXPORT!
+export interface Category {
   id: string;
   name: string;
   type: TransactionType;

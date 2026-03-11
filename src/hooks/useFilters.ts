@@ -82,7 +82,6 @@ export const useFilters = (transactions: Transaction[]) => {
     });
   }, []);
 
-  // FUNÇÕES ÚTEIS ADICIONAIS
   const getActiveFiltersCount = useCallback(() => {
     let count = 0;
     if (filters.startDate) count++;

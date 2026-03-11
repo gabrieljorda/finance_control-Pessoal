@@ -1,5 +1,5 @@
-// src/pages/Dashboard.tsx
-import { useState, useEffect } from 'react';
+// src/pages/Dashboard.tsx - VERSÃO SIMPLIFICADA
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { 
@@ -7,44 +7,135 @@ import {
   TrendingUp, 
   TrendingDown, 
   LogOut,
-  RefreshCw,
   PlusCircle,
   List,
   ArrowRight
 } from 'lucide-react';
 import { SummaryCard } from '../components/dashboard/SummaryCard';
 import { ExpensesPieChart } from '../components/dashboard/ExpensesPieChart';
-import { MonthlyBarChart } from '../components/dashboard/MonthlyBarChart';
 import { RecentTransactions } from '../components/dashboard/RecentTransactions';
-import { getDashboardData } from '../utils/mockData';
-import type { DashboardData } from '../types/finances';
+import { SimpleDateFilter } from '../components/dashboard/SimpleDateFilter';
+import { useSimpleDateFilter } from '../hooks/useSimpleDateFilter';
 import { useFinance } from '../contexts/FinanceContext';
+import type { Transaction } from '../types/finances';
 
 export const Dashboard = () => {
   const navigate = useNavigate();
-  const { transactions } = useFinance(); // Pegar transações do contexto
-  const [data, setData] = useState<DashboardData | null>(null);
+  const { transactions } = useFinance();
   const [loading, setLoading] = useState(true);
+  
+  // Hook de filtro SIMPLES
+  const {
+    filter,
+    filterDisplayText,
+    updateFilterType,
+    updateYear,
+    updateMonth,
+    updateDay,
+  } = useSimpleDateFilter();
 
-  // Carregar dados do dashboard
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        // Simular carregamento
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const dashboardData = getDashboardData();
-        setData(dashboardData);
-      } catch (error) {
-        toast.error('Erro ao carregar dados');
-      } finally {
-        setLoading(false);
-      }
+  // =============================================
+  // FUNÇÕES AUXILIARES
+  // =============================================
+  const calculateBalance = (transactions: Transaction[]) => {
+    return transactions.reduce((sum, t) => 
+      t.type === 'income' ? sum + t.amount : sum - t.amount, 0
+    );
+  };
+
+  const getCategoryColor = (category: string) => {
+    const colors: Record<string, string> = {
+      'Alimentação': '#EF4444',
+      'Transporte': '#3B82F6',
+      'Moradia': '#10B981',
+      'Lazer': '#F59E0B',
+      'Saúde': '#8B5CF6',
+      'Salário': '#059669',
+      'Freelance': '#2563EB',
     };
+    return colors[category] || '#6B7280';
+  };
 
-    loadData();
-  }, [transactions]); // Recarregar quando transações mudarem
+  // =============================================
+  // FILTRO - AGORA FUNCIONA CORRETAMENTE
+  // =============================================
+  const filteredTransactions = useMemo(() => {
+    console.log('Filtrando transações:', {
+      filter,
+      totalTransacoes: transactions.length
+    });
 
-  // Verificar se usuário está logado
+    return transactions.filter(transaction => {
+      const transactionDate = new Date(transaction.date);
+      const transactionYear = transactionDate.getFullYear();
+      const transactionMonth = transactionDate.getMonth() + 1;
+      const transactionDay = transactionDate.getDate();
+
+      switch (filter.type) {
+        case 'year':
+          return transactionYear === filter.year;
+        
+        case 'month':
+          return transactionYear === filter.year && 
+                 transactionMonth === filter.month;
+        
+        case 'day':
+          return transactionYear === filter.year && 
+                 transactionMonth === filter.month && 
+                 transactionDay === filter.day;
+        
+        default:
+          return true;
+      }
+    });
+  }, [transactions, filter]);
+
+  // =============================================
+  // DADOS DO DASHBOARD - ATUALIZA COM O FILTRO
+  // =============================================
+  const dashboardData = useMemo(() => {
+    console.log('Calculando dados para', filter.type, 'com', filteredTransactions.length, 'transações');
+
+    const monthlyIncome = filteredTransactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const monthlyExpense = filteredTransactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const expensesByCategory = filteredTransactions
+      .filter(t => t.type === 'expense')
+      .reduce((acc, t) => {
+        const existing = acc.find(item => item.category === t.category);
+        if (existing) {
+          existing.amount += t.amount;
+        } else {
+          acc.push({
+            category: t.category,
+            amount: t.amount,
+            color: getCategoryColor(t.category)
+          });
+        }
+        return acc;
+      }, [] as { category: string; amount: number; color: string; }[]);
+
+    return {
+      balance: calculateBalance(transactions), // Saldo TOTAL (sempre)
+      monthlyIncome,
+      monthlyExpense,
+      recentTransactions: filteredTransactions.slice(0, 10),
+      expensesByCategory,
+    };
+  }, [filteredTransactions, transactions]);
+
+  // =============================================
+  // EFFECTS
+  // =============================================
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1000);
+  }, []);
+
   useEffect(() => {
     const token = localStorage.getItem('@finance:token');
     if (!token) {
@@ -59,16 +150,6 @@ export const Dashboard = () => {
     navigate('/login');
   };
 
-  const handleRefresh = () => {
-    setLoading(true);
-    setTimeout(() => {
-      const dashboardData = getDashboardData();
-      setData(dashboardData);
-      setLoading(false);
-      toast.success('Dados atualizados!');
-    }, 500);
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -80,17 +161,8 @@ export const Dashboard = () => {
     );
   }
 
-  if (!data) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <p className="text-gray-400">Erro ao carregar dados</p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-black">
-      {/* Header */}
       <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -99,99 +171,127 @@ export const Dashboard = () => {
             </h1>
             
             <div className="flex items-center space-x-4">
-              {/* BOTÃO: Nova Transação */}
               <button
                 onClick={() => navigate('/transactions?new=true')}
                 className="flex items-center space-x-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
               >
                 <PlusCircle size={18} />
-                <span className="hidden sm:inline">Nova Transação</span>
+                <span className="hidden sm:inline">Nova</span>
               </button>
 
-              {/* BOTÃO: Ver Todas Transações */}
               <button
                 onClick={() => navigate('/transactions')}
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 <List size={18} />
-                <span className="hidden sm:inline">Ver Transações</span>
-              </button>
-
-              <button
-                onClick={handleRefresh}
-                className="p-2 text-gray-400 hover:text-white transition-colors"
-                title="Atualizar dados"
-              >
-                <RefreshCw size={20} />
+                <span className="hidden sm:inline">Lista</span>
               </button>
               
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                title="Sair"
               >
                 <LogOut size={18} />
-                <span className="hidden sm:inline">Sair</span>
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Conteúdo principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* Cards de resumo */}
+        {/* FILTRO SIMPLES */}
+        <SimpleDateFilter
+          filterType={filter.type}
+          year={filter.year}
+          month={filter.month}
+          day={filter.day}
+          displayText={filterDisplayText}
+          onTypeChange={updateFilterType}
+          onYearChange={updateYear}
+          onMonthChange={updateMonth}
+          onDayChange={updateDay}
+        />
+
+        {/* CARDS - AGORA ATUALIZAM CORRETAMENTE */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <SummaryCard
-            title="Saldo Atual"
-            value={data.balance}
+            title="Saldo Total"
+            value={dashboardData.balance}
             icon={<Wallet size={20} />}
             type="balance"
           />
           
           <SummaryCard
-            title="Receitas do Mês"
-            value={data.monthlyIncome}
+            title={`Receitas (${filter.type === 'day' ? 'dia' : filter.type === 'month' ? 'mês' : 'ano'})`}
+            value={dashboardData.monthlyIncome}
             icon={<TrendingUp size={20} />}
             type="income"
           />
           
           <SummaryCard
-            title="Despesas do Mês"
-            value={data.monthlyExpense}
+            title={`Despesas (${filter.type === 'day' ? 'dia' : filter.type === 'month' ? 'mês' : 'ano'})`}
+            value={dashboardData.monthlyExpense}
             icon={<TrendingDown size={20} />}
             type="expense"
           />
         </div>
 
-        {/* Gráficos */}
+        {/* GRÁFICO DE PIZZA */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Gráfico de Pizza - Despesas por Categoria */}
           <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
             <h2 className="text-lg font-semibold text-white mb-4">
-              Despesas por Categoria
+              Despesas por Categoria ({filter.type === 'day' ? 'dia' : filter.type === 'month' ? 'mês' : 'ano'})
             </h2>
             <div className="h-75">
-              <ExpensesPieChart data={data.expensesByCategory} />
+              <ExpensesPieChart data={dashboardData.expensesByCategory} />
             </div>
           </div>
 
-          {/* Gráfico de Barras - Evolução Mensal */}
+          {/* RESUMO DO PERÍODO */}
           <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
             <h2 className="text-lg font-semibold text-white mb-4">
-              Evolução Mensal
+              Resumo do Período
             </h2>
-            <div className="h-75">
-              <MonthlyBarChart data={data.monthlyEvolution} />
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
+                <span className="text-gray-400">Total de transações:</span>
+                <span className="text-white font-bold">{filteredTransactions.length}</span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
+                <span className="text-gray-400">Média por transação:</span>
+                <span className="text-white font-bold">
+                  {filteredTransactions.length > 0 
+                    ? ((dashboardData.monthlyIncome + dashboardData.monthlyExpense) / filteredTransactions.length).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                      })
+                    : 'R$ 0,00'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
+                <span className="text-gray-400">Saldo do período:</span>
+                <span className={`font-bold ${
+                  dashboardData.monthlyIncome - dashboardData.monthlyExpense >= 0
+                    ? 'text-green-400'
+                    : 'text-red-400'
+                }`}>
+                  {(dashboardData.monthlyIncome - dashboardData.monthlyExpense).toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                  })}
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Últimas Transações */}
+        {/* TRANSAÇÕES DO PERÍODO */}
         <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-white">
-              Últimas Transações
+              Transações do Período
             </h2>
             <button
               onClick={() => navigate('/transactions')}
@@ -201,18 +301,11 @@ export const Dashboard = () => {
               <ArrowRight size={18} />
             </button>
           </div>
-          <RecentTransactions transactions={data.recentTransactions} />
-          
-          {/* Botão adicional no final da lista (para mobile) */}
-          {data.recentTransactions.length > 0 && (
-            <div className="mt-4 text-center sm:hidden">
-              <button
-                onClick={() => navigate('/transactions')}
-                className="inline-flex items-center space-x-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
-              >
-                <span>Ver todas as transações</span>
-                <ArrowRight size={16} />
-              </button>
+          {filteredTransactions.length > 0 ? (
+            <RecentTransactions transactions={dashboardData.recentTransactions} />
+          ) : (
+            <div className="text-center py-12 text-gray-400">
+              Nenhuma transação encontrada para este período
             </div>
           )}
         </div>
