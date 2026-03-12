@@ -1,8 +1,7 @@
-// src/hooks/useFilters.ts - VERSÃO MELHORADA
 import { useState, useMemo, useCallback } from 'react';
 import type { Transaction } from '../types/finances';
 
-interface Filters {
+export interface Filters {
   startDate: string;
   endDate: string;
   category: string;

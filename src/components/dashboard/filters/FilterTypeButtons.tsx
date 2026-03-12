@@ -1,4 +1,3 @@
-// src/components/dashboard/filters/FilterTypeButtons.tsx
 import type { DateFilterType } from '../../../hooks/useSimpleDateFilter';
 
 interface FilterTypeButtonsProps {
@@ -14,15 +13,17 @@ export const FilterTypeButtons = ({ filterType, onTypeChange }: FilterTypeButton
   ];
 
   return (
-    <div className="flex space-x-1 mb-4">
+    <div className="flex flex-wrap gap-2 sm:gap-1 mb-4">
       {types.map(({ value, label }, index) => (
         <button
           key={value}
           onClick={() => onTypeChange(value)}
           className={`
-            px-4 py-2 font-medium transition-colors
-            ${index === 0 ? 'rounded-l-lg' : ''}
-            ${index === types.length - 1 ? 'rounded-r-lg' : ''}
+            flex-1 sm:flex-none px-3 py-2 sm:px-4 sm:py-2 
+            rounded-lg sm:rounded-none
+            ${index === 0 ? 'sm:rounded-l-lg' : ''}
+            ${index === types.length - 1 ? 'sm:rounded-r-lg' : ''}
+            font-medium text-sm sm:text-base transition-colors
             ${filterType === value
               ? 'bg-purple-600 text-white'
               : 'bg-gray-800 text-gray-400 hover:text-white'

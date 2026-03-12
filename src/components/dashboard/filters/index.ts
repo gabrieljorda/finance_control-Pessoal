@@ -1,4 +1,3 @@
-// src/components/dashboard/filters/index.ts
 export { SimpleDateFilter } from './SimpleDateFilter';
 export { FilterTypeButtons } from './FilterTypeButtons';
 export { DateDisplay } from './DateDisplay';

@@ -1,4 +1,3 @@
-// src/components/layout/Navigation.tsx
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, List, PlusCircle } from 'lucide-react';
 

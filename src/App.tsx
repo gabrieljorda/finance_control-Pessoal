@@ -1,4 +1,3 @@
-// src/App.tsx
 import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { FinanceProvider } from './contexts/FinanceContext';
@@ -8,7 +7,7 @@ import './index.css';
 function App() {
   return (
     <BrowserRouter>
-      <FinanceProvider> {/* ← Envolvemos tudo com o provider */}
+      <FinanceProvider> 
         <Toaster 
           position="top-right"
           toastOptions={{

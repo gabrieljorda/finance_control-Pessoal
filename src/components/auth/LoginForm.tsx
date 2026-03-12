@@ -1,4 +1,3 @@
-// src/components/auth/LoginForm.tsx (atualizado)
 import { Link } from 'react-router-dom';
 import { Input, Button } from '../ui';
 import { useAuth } from '../../hooks/useAuth';

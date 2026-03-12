@@ -1,6 +1,3 @@
-// src/types/finances.ts
-// ======================
-
 export type TransactionType = 'income' | 'expense';
 
 export interface Transaction {

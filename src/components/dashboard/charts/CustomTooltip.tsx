@@ -1,4 +1,3 @@
-// src/components/dashboard/charts/CustomTooltip.tsx
 import { formatCurrency } from '../../../utils/formatters';
 
 interface TooltipPayload {

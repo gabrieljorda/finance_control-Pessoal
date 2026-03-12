@@ -1,4 +1,3 @@
-// src/components/dashboard/filters/DateDisplay.tsx
 import { Calendar } from 'lucide-react';
 
 interface DateDisplayProps {
@@ -7,9 +6,9 @@ interface DateDisplayProps {
 
 export const DateDisplay = ({ displayText }: DateDisplayProps) => {
   return (
-    <div className="flex items-center space-x-2 bg-gray-800 rounded-lg px-4 py-3">
-      <Calendar size={20} className="text-purple-400" />
-      <span className="text-white text-lg font-medium">
+    <div className="flex items-center justify-center sm:justify-start space-x-2 bg-gray-800 rounded-lg px-3 py-2 sm:px-4 sm:py-3 w-full sm:w-auto">
+      <Calendar size={18} className="text-purple-400 shrink-0" />
+      <span className="text-white text-sm sm:text-base font-medium truncate">
         {displayText}
       </span>
     </div>

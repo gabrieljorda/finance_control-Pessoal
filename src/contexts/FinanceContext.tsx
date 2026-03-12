@@ -1,6 +1,17 @@
+// src/contexts/FinanceContext.tsx - DEPOIS
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { Transaction, Category } from '../types/finances';
-import { mockTransactions, mockCategories } from '../utils/mockData';
+
+// Mantenha as categorias (elas são fixas mesmo)
+const defaultCategories: Category[] = [
+  { id: '1', name: 'Alimentação', type: 'expense', color: '#EF4444', icon: '🍔' },
+  { id: '2', name: 'Transporte', type: 'expense', color: '#3B82F6', icon: '🚗' },
+  { id: '3', name: 'Moradia', type: 'expense', color: '#10B981', icon: '🏠' },
+  { id: '4', name: 'Lazer', type: 'expense', color: '#F59E0B', icon: '🎮' },
+  { id: '5', name: 'Saúde', type: 'expense', color: '#8B5CF6', icon: '🏥' },
+  { id: '6', name: 'Salário', type: 'income', color: '#059669', icon: '💰' },
+  { id: '7', name: 'Freelance', type: 'income', color: '#2563EB', icon: '💻' },
+];
 
 interface FinanceContextData {
   transactions: Transaction[];
@@ -16,7 +27,7 @@ const FinanceContext = createContext<FinanceContextData>({} as FinanceContextDat
 
 export const FinanceProvider = ({ children }: { children: React.ReactNode }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [categories] = useState<Category[]>(mockCategories);
+  const [categories] = useState<Category[]>(defaultCategories); // ← Categorias fixas
   const [loading, setLoading] = useState(true);
 
   // Carregar dados do localStorage ao iniciar
@@ -27,13 +38,13 @@ export const FinanceProvider = ({ children }: { children: React.ReactNode }) => 
         if (storedTransactions) {
           setTransactions(JSON.parse(storedTransactions));
         } else {
-          // Se não tiver dados, usar mockados
-          setTransactions(mockTransactions);
-          localStorage.setItem('@finance:transactions', JSON.stringify(mockTransactions));
+          // AGORA começa com array vazio em vez de mockTransactions
+          setTransactions([]);
+          localStorage.setItem('@finance:transactions', JSON.stringify([]));
         }
       } catch (error) {
         console.error('Erro ao carregar transações:', error);
-        setTransactions(mockTransactions);
+        setTransactions([]); // ← Array vazio em caso de erro
       } finally {
         setLoading(false);
       }

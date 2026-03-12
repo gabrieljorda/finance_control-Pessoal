@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Edit, Trash2, ArrowUpDown } from 'lucide-react';
 import type { Transaction } from '../../types/finances';
 import { useFinance } from '../../contexts/FinanceContext';
@@ -40,22 +40,36 @@ export const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
     }
   };
 
-  const sortedTransactions = [...transactions].sort((a, b) => {
-    let aValue = a[sortField];
-    let bValue = b[sortField];
+  const sortedTransactions = useMemo(() => {
+  const transactionsWithTime = transactions.map(t => ({
+    ...t,
+    _sortTime: new Date(t.date).getTime()
+  }));
 
-    if (sortField === 'amount') {
-      aValue = a.amount;
-      bValue = b.amount;
-    } else if (sortField === 'date') {
-      aValue = new Date(a.date).getTime();
-      bValue = new Date(b.date).getTime();
+  return [...transactionsWithTime].sort((a, b) => {
+    
+    if (sortField === 'date') {
+      return sortDirection === 'asc' 
+        ? a._sortTime - b._sortTime 
+        : b._sortTime - a._sortTime;
     }
-
-    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
+    
+    if (sortField === 'amount') {
+      return sortDirection === 'asc' 
+        ? a.amount - b.amount 
+        : b.amount - a.amount;
+    }
+    
+    const aValue = String(a[sortField] || '').toLowerCase();
+    const bValue = String(b[sortField] || '').toLowerCase();
+    
+    if (sortDirection === 'asc') {
+      return aValue.localeCompare(bValue);
+    } else {
+      return bValue.localeCompare(aValue);
+    }
+    
+  }).map(({ _sortTime, ...t }) => t); }, [transactions, sortField, sortDirection]);
 
   const handleEdit = (transaction: Transaction) => {
     setEditingTransaction(transaction);

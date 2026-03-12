@@ -1,4 +1,3 @@
-// src/components/dashboard/charts/EmptyChart.tsx
 interface EmptyChartProps {
   className?: string;
 }

@@ -1,6 +1,5 @@
-// src/pages/Transactions.tsx
 import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom'; // ← IMPORTAR useNavigate
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { useFinance } from '../contexts/FinanceContext';
 import { useFilters } from '../hooks/useFilters';
@@ -14,6 +13,7 @@ export const Transactions = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate(); // ← CRIAR A FUNÇÃO navigate
+  
 
   useEffect(() => {
     if (searchParams.get('new') === 'true') {
@@ -45,7 +45,7 @@ export const Transactions = () => {
             
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => navigate('/dashboard')} // ← AGORA navigate existe
+                onClick={() => navigate('/dashboard')}
                 className="flex items-center space-x-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
               >
                 <span>Dashboard</span>

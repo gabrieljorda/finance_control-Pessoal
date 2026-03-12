@@ -1,9 +1,8 @@
-// src/routes.tsx
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
-import { Transactions } from './pages/Transactions'; // ← Importar
+import { Transactions } from './pages/Transactions'; 
 
 export function AppRoutes() {
   return (
@@ -12,7 +11,7 @@ export function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/transactions" element={<Transactions />} /> {/* ← Nova rota */}
+      <Route path="/transactions" element={<Transactions />} /> 
     </Routes>
   );
 }

@@ -2,15 +2,12 @@
 import { Search, X, Filter } from 'lucide-react';
 import { useFinance } from '../../contexts/FinanceContext';
 
+// 1. Primeiro, importe o tipo Filters do hook
+import type { Filters } from '../../hooks/useFilters';  // ← IMPORTANTE!
+
 interface TransactionFiltersProps {
-  filters: {
-    startDate: string;
-    endDate: string;
-    category: string;
-    type: 'all' | 'income' | 'expense';
-    search: string;
-  };
-  onFilterChange: (key: string, value: string) => void;
+  filters: Filters;  // ← Use o tipo Filters importado
+  onFilterChange: <K extends keyof Filters>(key: K, value: Filters[K]) => void;  // ← Tipagem correta!
   onClearFilters: () => void;
 }
 
@@ -71,7 +68,7 @@ export const TransactionFilters = ({
           </label>
           <select
             value={filters.type}
-            onChange={(e) => onFilterChange('type', e.target.value)}
+            onChange={(e) => onFilterChange('type', e.target.value as 'all' | 'income' | 'expense')}
             className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <option value="all">Todos</option>

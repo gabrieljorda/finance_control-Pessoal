@@ -1,86 +1,93 @@
-// src/components/dashboard/charts/ExpensesPieChart.tsx
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { useMemo } from 'react';
-import { EmptyChart } from './EmptyChart';
-import { CustomLabel } from './CustomLabel';
-import { CustomTooltip } from './CustomTooltip';
-import { ChartLegend } from './ChartLegend';
-import { CHART_COLORS, CHART_CONFIG } from './constants';
-import type { ChartDataItem } from '../../../types/charts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+
+interface ChartDataItem {
+  category: string;
+  amount: number;
+  color: string;
+}
 
 interface ExpensesPieChartProps {
   data: ChartDataItem[];
   className?: string;
-  showLegend?: boolean;
-  showTotal?: boolean;
 }
 
-export const ExpensesPieChart = ({ 
-  data, 
-  className = '',
-  showLegend = true,
-  showTotal = true 
-}: ExpensesPieChartProps) => {
+export const ExpensesPieChart = ({ data, className = '' }: ExpensesPieChartProps) => {
   
   if (!data?.length) {
-    return <EmptyChart className={className} />;
+    return (
+      <div className={`w-full h-full flex items-center justify-center text-gray-400 ${className}`}>
+        <p className="text-sm">Sem despesas no período</p>
+      </div>
+    );
   }
 
-  const total = useMemo(() => 
-    data.reduce((sum, item) => sum + item.amount, 0), 
-    [data]
-  );
+
+
+  // Constante para conversão de ângulos
+  const RADIAN = Math.PI / 180;
+
+  // Função para renderizar as labels com porcentagem
+  const renderCustomizedLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+  }: any) => {
+    // Só mostra porcentagem se for maior que 5%
+    if (percent < 0.05) return null;
+
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.6;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="text-xs font-bold"
+        style={{
+          textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+          fontWeight: 600
+        }}
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
 
   return (
-    <div className={`w-full ${className}`}>
-      <div className="h-75">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={CustomLabel}
-              outerRadius={CHART_CONFIG.outerRadius}
-              innerRadius={CHART_CONFIG.innerRadius}
-              dataKey="amount"
-              nameKey="category"
-              paddingAngle={CHART_CONFIG.paddingAngle}
-            >
-              {data.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
-                  fill={entry.color}
-                  stroke={CHART_COLORS.background}
-                  strokeWidth={CHART_CONFIG.strokeWidth}
-                />
-              ))}
-            </Pie>
-            
-            <Tooltip content={<CustomTooltip total={total} />} />
-            
-            {showLegend && (
-              <Legend 
-                content={<ChartLegend data={data} />}
-                verticalAlign="bottom"
-                height={50}
+    <div className={`w-full h-full ${className}`}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            innerRadius={0}
+            outerRadius="90%"
+            dataKey="amount"
+            paddingAngle={2}
+            startAngle={90}
+            endAngle={-270}
+            labelLine={false}
+            label={renderCustomizedLabel}
+          >
+            {data.map((entry, index) => (
+              <Cell 
+                key={`cell-${index}`} 
+                fill={entry.color}
+                stroke="#1F2937"
+                strokeWidth={2}
               />
-            )}
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-
-      {showTotal && (
-        <div className="text-center mt-2 text-sm text-gray-400">
-          Total: <span className="text-white font-medium">
-            {total.toLocaleString('pt-BR', { 
-              style: 'currency', 
-              currency: 'BRL' 
-            })}
-          </span>
-        </div>
-      )}
+            ))}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-// src/components/dashboard/charts/ChartLegend.tsx
 import { formatCurrency } from '../../../utils/formatters';
 
 interface ChartLegendProps {

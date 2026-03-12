@@ -1,4 +1,3 @@
-// src/components/dashboard/charts/CustomLabel.tsx
 import { RADIAN, CHART_CONFIG } from './constants';
 
 // 1. Primeiro, definimos a interface das props

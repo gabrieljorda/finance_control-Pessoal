@@ -1,4 +1,3 @@
-// src/hooks/useSimpleDateFilter.ts - VERSÃO CORRETA COM TODOS OS EXPORTS
 import { useState, useMemo } from 'react';
 
 // 1. PRIMEIRO: Exportar o tipo (faltava isso!)
